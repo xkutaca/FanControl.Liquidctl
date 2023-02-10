@@ -1,5 +1,7 @@
 # FanControl.Liquidctl
 
+This is a fork of [jmarucha](https://github.com/jmarucha/FanControl.Liquidctl)'s original. It stops liquidctl from starting and stopping all the time by using a custom made [fork](https://github.com/SuspiciousActivity/liquidctl) that has an interactive mode. Works for my machine (Kraken X63) but not tested for anything else at all, **use at your own risk**. This applies to the liquidctl repo as well.
+
 This is a simple plugin that uses [liquidctl](https://github.com/liquidctl/liquidctl) to provide sensor data and pump control to variety of AIOs. So far it is tested with NZXT Kraken X63, but in principle shall work with [supported devices](https://github.com/liquidctl/liquidctl#supported-devices)
 
 ## Installation
