@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using FanControl.Plugins;
 
@@ -10,7 +10,7 @@ namespace FanControl.Liquidctl
         {
             public LiquidTemperature(LiquidctlStatusJSON output)
             {
-                _id = $"{output.address}-liqtmp";
+                _id = $"{output.address.ToLower()}-liqtmp";
                 _name = $"Liquid Temp. - {output.description}";
                 UpdateFromJSON(output);
             }
@@ -34,7 +34,7 @@ namespace FanControl.Liquidctl
         {
             public PumpSpeed(LiquidctlStatusJSON output)
             {
-                _id = $"{output.address}-pumprpm";
+                _id = $"{output.address.ToLower()}-pumprpm";
                 _name = $"Pump - {output.description}";
                 UpdateFromJSON(output);
             }
@@ -59,7 +59,7 @@ namespace FanControl.Liquidctl
             public PumpDuty(LiquidctlStatusJSON output)
             {
                 _address = output.address;
-                _id = $"{_address}-pumpduty";
+                _id = $"{_address.ToLower()}-pumpduty";
                 _name = $"Pump Control - {output.description}";
                 UpdateFromJSON(output);
             }
