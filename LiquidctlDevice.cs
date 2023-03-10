@@ -16,7 +16,7 @@ namespace FanControl.Liquidctl
             }
             public void UpdateFromJSON(LiquidctlStatusJSON output)
             {
-                _value = (float)output.status.Single(entry => entry.key == "Liquid temperature").value;
+                _value = (float)output.status.Single(entry => entry.key == "Liquid temperature").GetValueAsFloat();
             }
             public string Id => _id;
             string _id;
@@ -26,7 +26,7 @@ namespace FanControl.Liquidctl
 
             public float? Value => _value;
             float _value;
-
+            
             public void Update()
             { } // plugin updates sensors
         }
@@ -40,7 +40,7 @@ namespace FanControl.Liquidctl
             }
             public void UpdateFromJSON(LiquidctlStatusJSON output)
             {
-                _value = (float)output.status.Single(entry => entry.key == "Pump speed").value;
+                _value = (float)output.status.Single(entry => entry.key == "Pump speed").GetValueAsFloat();
             }
             public string Id => _id;
             readonly string _id;
@@ -65,7 +65,7 @@ namespace FanControl.Liquidctl
             }
             public void UpdateFromJSON(LiquidctlStatusJSON output)
             {
-                _value = (float)output.status.Single(entry => entry.key == "Pump duty").value;
+                _value = (float)output.status.Single(entry => entry.key == "Pump duty").GetValueAsFloat();
             }
             public string Id => _id;
             string _id;
@@ -95,15 +95,15 @@ namespace FanControl.Liquidctl
         {
             address = output.address;
 
-            hasPumpSpeed = output.status.Exists(entry => entry.key == "Pump speed" && !(entry.value is null));
+            hasPumpSpeed = output.status.Exists(entry => entry.key == "Pump speed" && !(entry.GetValueAsFloat() is null));
             if (hasPumpSpeed)
                 pumpSpeed = new PumpSpeed(output);
 
-            hasPumpDuty = output.status.Exists(entry => entry.key == "Pump duty" && !(entry.value is null));
+            hasPumpDuty = output.status.Exists(entry => entry.key == "Pump duty" && !(entry.GetValueAsFloat() is null));
             if (hasPumpDuty)
                 pumpDuty = new PumpDuty(output);
 
-            hasLiquidTemperature = output.status.Exists(entry => entry.key == "Liquid temperature" && !(entry.value is null));
+            hasLiquidTemperature = output.status.Exists(entry => entry.key == "Liquid temperature" && !(entry.GetValueAsFloat() is null));
             if (hasLiquidTemperature)
                 liquidTemperature = new LiquidTemperature(output);
         }
