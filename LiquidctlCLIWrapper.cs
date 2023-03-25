@@ -11,6 +11,7 @@ namespace FanControl.Liquidctl
         public static string liquidctlexe = "Plugins\\liquidctl.exe"; //TODO extract path to executable to config
 
         private static Dictionary<string, Process> liquidctlBackends = new Dictionary<string, Process>();
+        private static bool hasLastCallFailed = false;
 
         internal static void Initialize() {
             LiquidctlCall($"--json initialize all");
@@ -22,8 +23,20 @@ namespace FanControl.Liquidctl
         internal static List<LiquidctlStatusJSON> ReadStatus(string address) {
             Process process = GetLiquidCtlBackend(address);
             process.StandardInput.WriteLine("status");
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
+            string line = process.StandardOutput.ReadLine();
+            // restart if liquidctl crashed
+            if (line == null) {
+                Initialize();
+                process = RestartLiquidCtlBackend(process, address);
+                process.StandardInput.WriteLine("status");
+                line = process.StandardOutput.ReadLine();
+                if (line == null) {
+                    throw new Exception($"liquidctl returns empty line. Remaining stdout:\n{process.StandardOutput.ReadToEnd()} Last stderr output:\n{process.StandardError.ReadToEnd()}");
+                }
+            }
+            JObject result = JObject.Parse(line);
             string status = (string)result.SelectToken("status");
+            hasLastCallFailed = false;
             if (status == "success")
                 return result.SelectToken("data").ToObject<List<LiquidctlStatusJSON>>();
             throw new Exception((string)result.SelectToken("data"));
@@ -36,6 +49,18 @@ namespace FanControl.Liquidctl
             if (status == "success")
                 return;
             throw new Exception((string)result.SelectToken("data"));
+        }
+
+        private static Process RestartLiquidCtlBackend(Process oldProcess, string address) {
+            liquidctlBackends.Remove(address);
+            try {
+                oldProcess.StandardInput.WriteLine("exit");
+                oldProcess.WaitForExit(200);
+            } catch (Exception) {
+                if (!oldProcess.HasExited)
+                    oldProcess.Kill();
+            }
+            return GetLiquidCtlBackend(address);
         }
 
         private static Process GetLiquidCtlBackend(string address) {
@@ -83,8 +108,16 @@ namespace FanControl.Liquidctl
             process.WaitForExit();
 
             if (process.ExitCode != 0) {
+                // try to initialize again
+                if (process.ExitCode == 1 && !hasLastCallFailed) {
+                    hasLastCallFailed = true;
+                    Initialize();
+                    return LiquidctlCall(arguments);
+                }
                 throw new Exception($"liquidctl returned non-zero exit code {process.ExitCode}. Last stderr output:\n{process.StandardError.ReadToEnd()}");
             }
+
+            hasLastCallFailed = false;
 
             return process;
         }
