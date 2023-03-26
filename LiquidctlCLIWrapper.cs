@@ -73,6 +73,8 @@ namespace FanControl.Liquidctl
                 liquidctlBackends.Remove(address);
             }
 
+            KeyValuePair<string, string> identifier = LiquidctlStatusJSON.GetBusAndAddress(address);
+
             process = new Process();
 
             process.StartInfo.CreateNoWindow = true;
@@ -83,7 +85,14 @@ namespace FanControl.Liquidctl
             process.StartInfo.RedirectStandardInput = true;
 
             process.StartInfo.FileName = liquidctlexe;
-            process.StartInfo.Arguments = $"--json --address {address} interactive";
+            switch (identifier.Key) {
+                case "usb":
+                    process.StartInfo.Arguments = $"--json --usb-port {identifier.Value} interactive";
+                    break;
+                case "hid":
+                    process.StartInfo.Arguments = $"--json --address {address} interactive";
+                    break;
+            }
 
             liquidctlBackends.Add(address, process);
 

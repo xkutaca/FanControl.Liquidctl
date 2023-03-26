@@ -10,7 +10,7 @@ namespace FanControl.Liquidctl
         {
             public LiquidTemperature(LiquidctlStatusJSON output)
             {
-                _id = $"{output.address.ToLower()}-liqtmp";
+                _id = $"{output.GetAddress().ToLower()}-liqtmp";
                 _name = $"Liquid Temp. - {output.description}";
                 UpdateFromJSON(output);
             }
@@ -34,7 +34,7 @@ namespace FanControl.Liquidctl
         {
             public PumpSpeed(LiquidctlStatusJSON output)
             {
-                _id = $"{output.address.ToLower()}-pumprpm";
+                _id = $"{output.GetAddress().ToLower()}-pumprpm";
                 _name = $"Pump - {output.description}";
                 UpdateFromJSON(output);
             }
@@ -58,7 +58,7 @@ namespace FanControl.Liquidctl
         {
             public PumpDuty(LiquidctlStatusJSON output)
             {
-                _address = output.address;
+                _address = output.GetAddress();
                 _id = $"{_address.ToLower()}-pumpduty";
                 _name = $"Pump Control - {output.description}";
                 UpdateFromJSON(output);
@@ -93,7 +93,7 @@ namespace FanControl.Liquidctl
         }
         public LiquidctlDevice(LiquidctlStatusJSON output)
         {
-            address = output.address;
+            address = output.GetAddress();
 
             hasPumpSpeed = output.status.Exists(entry => entry.key == "Pump speed" && !(entry.GetValueAsFloat() is null));
             if (hasPumpSpeed)
