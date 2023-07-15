@@ -27,6 +27,11 @@ namespace FanControl.Liquidctl
                     _container.ControlSensors.Add(device.pumpDuty);
                 if (device.hasLiquidTemperature)
                     _container.TempSensors.Add(device.liquidTemperature);
+                if (device.hasFanSpeed)
+                {
+                    _container.FanSensors.Add(device.fanSpeed);
+                    _container.ControlSensors.Add(device.fanControl);
+                }
                 devices.Add(device);
             }
         }
