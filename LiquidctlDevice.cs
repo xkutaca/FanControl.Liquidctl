@@ -121,6 +121,9 @@ namespace FanControl.Liquidctl
         public LiquidTemperature liquidTemperature;
         public PumpSpeed pumpSpeed;
         public PumpDuty pumpDuty;
+        public FanSpeed fanSpeed;
+        public FanControl fanControl;
+
 
         public void LoadJSON()
         {
